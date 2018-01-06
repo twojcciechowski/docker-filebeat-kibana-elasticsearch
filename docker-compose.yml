@@ -1,0 +1,54 @@
+version: "3.3"
+
+services:
+  
+    elasticsearch:
+      image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+      container_name: elasticsearch
+      environment:
+        - cluster.name=tw-docker-cluster
+        - bootstrap.memory_lock=true
+        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      ulimits:
+        memlock:
+          soft: -1
+          hard: -1
+      ports:
+        - 9200:9200
+      networks:
+        - esnet
+  
+    elasticsearch2:
+      image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
+      container_name: elasticsearch2
+      environment:
+        - cluster.name=tw-docker-cluster
+        - bootstrap.memory_lock=true
+        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        - "discovery.zen.ping.unicast.hosts=elasticsearch"
+      ulimits:
+        memlock:
+          soft: -1
+          hard: -1
+      networks:
+        - esnet
+
+    filebeat:
+      image: docker.elastic.co/beats/filebeat:6.1.1
+      container_name: filebeat
+      volumes:
+        - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+        - /tmp/invipay/logs:/logs
+      networks:
+        - esnet
+
+    kibana:
+      image: docker.elastic.co/kibana/kibana:6.1.1
+      container_name: kibana
+      ports:
+        - 5601:5601
+      networks:
+        - esnet
+        
+networks:
+  esnet:

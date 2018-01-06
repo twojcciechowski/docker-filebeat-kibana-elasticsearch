@@ -1,0 +1,9 @@
+filebeat.prospectors:
+- type: log
+  enabled: true
+  paths:
+    - /logs/*.log
+    - /logs/*.txt
+  
+output.elasticsearch:
+    hosts: ["http://elasticsearch:9200"]
